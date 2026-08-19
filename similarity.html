@@ -348,6 +348,7 @@
     overflow-x: auto; white-space: nowrap;
   }
   .algo-doc-item .note { font-size: 12px; color: var(--text-mute); margin-top: 6px; }
+  .algo-doc-item .note + .note { margin-top: 2px; }
   .algo-doc-item .note b { color: var(--text-soft); font-weight: 600; }
 </style>
 <script>
@@ -470,28 +471,32 @@
         <h3 class="title">Cosine <span class="en">/ 余弦相似度</span></h3>
         <p class="desc" data-i18n="docCosDesc">衡量两个向量在方向上的夹角，忽略长度，只看"朝向是否一致"。两个向量越平行，值越接近 1；垂直则为 0；反向则为 -1。常用于文本/语义检索，因为它对向量模长不敏感，只关注内容方向。</p>
         <p class="formula">sim(a, b) = (a · b) / (‖a‖ × ‖b‖) = Σ(aᵢ × bᵢ) / ( √Σaᵢ² × √Σbᵢ² )</p>
-        <p class="note"><b data-i18n="docRange">值域</b><span data-i18n="docCosRange">[-1, 1]，越大越相似。若向量已归一化（‖a‖=‖b‖=1），则 cos(a,b) = a·b，与内积等价。</span></p>
+        <p class="note"><b data-i18n="docRange">值域：</b><span data-i18n="docCosRange">[-1, 1]，越大越相似。</span></p>
+        <p class="note"><b data-i18n="docNormRange">归一化值域：</b><span data-i18n="docCosNormRange">[-1, 1]（不变）。此时 cos(a,b) = a·b，与内积等价。</span></p>
       </article>
 
       <article class="algo-doc-item">
         <h3 class="title">Inner Product <span class="en">/ 内积（点积）</span></h3>
         <p class="desc" data-i18n="docIpDesc">两个向量对应位置相乘再求和，同时考虑方向和长度。向量越长、方向越一致，值越大。在向量已归一化的前提下，内积退化为余弦相似度，这也是很多向量数据库默认用 IP 检索的原因。</p>
         <p class="formula">sim(a, b) = a · b = Σ(aᵢ × bᵢ)</p>
-        <p class="note"><b data-i18n="docRange">值域</b><span data-i18n="docIpRange">(-∞, +∞)，越大越相似。注意：未归一化时，内积大小同时受方向与模长影响，无法直接横向比较。</span></p>
+        <p class="note"><b data-i18n="docRange">值域：</b><span data-i18n="docIpRange">(-∞, +∞)，越大越相似。未归一化时，内积大小同时受方向与模长影响，无法直接横向比较。</span></p>
+        <p class="note"><b data-i18n="docNormRange">归一化值域：</b><span data-i18n="docIpNormRange">[-1, 1]，退化为 cos(a,b)。</span></p>
       </article>
 
       <article class="algo-doc-item">
         <h3 class="title">L2 Distance <span class="en">/ 欧氏距离</span></h3>
         <p class="desc" data-i18n="docL2Desc">两点在空间中的"直线距离"，即各维度差值平方和再开方。距离越小表示越相似，0 表示完全相同。它同时反映方向和长度的差异，对异常值（某个维度偏差大）更敏感。</p>
         <p class="formula">d(a, b) = ‖a − b‖₂ = √( Σ(aᵢ − bᵢ)² )</p>
-        <p class="note"><b data-i18n="docRange">值域</b><span data-i18n="docL2Range">[0, +∞)，越小越相似（0 表示完全相同）。与 Cosine/IP 不同，这里是"距离"而非"相似度"，因此热力图中颜色越暖代表越接近。</span></p>
+        <p class="note"><b data-i18n="docRange">值域：</b><span data-i18n="docL2Range">[0, +∞)，越小越相似（0 表示完全相同）。与 Cosine/IP 不同，这里是"距离"而非"相似度"，因此热力图中颜色越暖代表越接近。</span></p>
+        <p class="note"><b data-i18n="docNormRange">归一化值域：</b><span data-i18n="docL2NormRange">[0, 2]，两向量反向时取最大值 2。</span></p>
       </article>
 
       <article class="algo-doc-item">
         <h3 class="title">L2² Distance <span class="en">/ 欧氏距离平方</span></h3>
         <p class="desc" data-i18n="docL2sqDesc">L2 距离去掉开方运算，直接保留平方和。数学上与 L2 单调等价（排序结果完全一致），但省去了昂贵的 sqrt 计算，是向量检索（如 Faiss/IVF/PQ）中常用的工程优化手段。</p>
         <p class="formula">d²(a, b) = Σ(aᵢ − bᵢ)²</p>
-        <p class="note"><b data-i18n="docRange">值域</b><span data-i18n="docL2sqRange">[0, +∞)，越小越相似。与 L2 的相对大小关系完全一致，仅绝对值不同；适合用于排序、Top-K 检索等无需绝对距离的场景。</span></p>
+        <p class="note"><b data-i18n="docRange">值域：</b><span data-i18n="docL2sqRange">[0, +∞)，越小越相似。与 L2 的相对大小关系完全一致，仅绝对值不同；适合用于排序、Top-K 检索等无需绝对距离的场景。</span></p>
+        <p class="note"><b data-i18n="docNormRange">归一化值域：</b><span data-i18n="docL2sqNormRange">[0, 4]，两向量反向时取最大值 4。</span></p>
       </article>
 
     </div>
@@ -551,14 +556,19 @@ if (typeof XLSX === 'undefined') {
       docTitle: '相似度算法说明',
       docSubtitle: '以下为三种常用向量相似度算法的通俗解释与数学定义，帮助你理解结果含义。',
       docRange: '值域：',
+      docNormRange: '归一化值域：',
       docCosDesc: '衡量两个向量在方向上的夹角，忽略长度，只看"朝向是否一致"。两个向量越平行，值越接近 1；垂直则为 0；反向则为 -1。常用于文本/语义检索，因为它对向量模长不敏感，只关注内容方向。',
-      docCosRange: '[-1, 1]，越大越相似。若向量已归一化（‖a‖=‖b‖=1），则 cos(a,b) = a·b，与内积等价。',
+      docCosRange: '[-1, 1]，越大越相似。',
+      docCosNormRange: '[-1, 1]（不变）。此时 cos(a,b) = a·b，与内积等价。',
       docIpDesc: '两个向量对应位置相乘再求和，同时考虑方向和长度。向量越长、方向越一致，值越大。在向量已归一化的前提下，内积退化为余弦相似度，这也是很多向量数据库默认用 IP 检索的原因。',
-      docIpRange: '(-∞, +∞)，越大越相似。注意：未归一化时，内积大小同时受方向与模长影响，无法直接横向比较。',
+      docIpRange: '(-∞, +∞)，越大越相似。未归一化时，内积大小同时受方向与模长影响，无法直接横向比较。',
+      docIpNormRange: '[-1, 1]，退化为 cos(a,b)。',
       docL2Desc: '两点在空间中的"直线距离"，即各维度差值平方和再开方。距离越小表示越相似，0 表示完全相同。它同时反映方向和长度的差异，对异常值（某个维度偏差大）更敏感。',
       docL2Range: '[0, +∞)，越小越相似（0 表示完全相同）。与 Cosine/IP 不同，这里是"距离"而非"相似度"，因此热力图中颜色越暖代表越接近。',
+      docL2NormRange: '[0, 2]，两向量反向时取最大值 2。',
       docL2sqDesc: 'L2 距离去掉开方运算，直接保留平方和。数学上与 L2 单调等价（排序结果完全一致），但省去了昂贵的 sqrt 计算，是向量检索（如 Faiss/IVF/PQ）中常用的工程优化手段。',
       docL2sqRange: '[0, +∞)，越小越相似。与 L2 的相对大小关系完全一致，仅绝对值不同；适合用于排序、Top-K 检索等无需绝对距离的场景。',
+      docL2sqNormRange: '[0, 4]，两向量反向时取最大值 4。',
       ph_label: '标签',
       del: '删除',
       emptyVec: '暂无向量，点击下方「添加向量」或「Excel 导入」',
@@ -612,14 +622,19 @@ if (typeof XLSX === 'undefined') {
       docTitle: 'Similarity Algorithms',
       docSubtitle: 'Plain-language explanations and mathematical definitions of three common vector similarity algorithms.',
       docRange: 'Range: ',
+      docNormRange: 'Normalized range: ',
       docCosDesc: 'Measures the angle between two vectors, ignoring magnitude — only "direction alignment" matters. Parallel vectors score ≈1, orthogonal ≈0, opposite ≈-1. Widely used in text/semantic retrieval because it is magnitude-insensitive.',
-      docCosRange: '[-1, 1]; higher is more similar. If vectors are normalized (‖a‖=‖b‖=1), cos(a,b) = a·b, equivalent to the inner product.',
+      docCosRange: '[-1, 1]; higher is more similar.',
+      docCosNormRange: '[-1, 1] (unchanged). cos(a,b) = a·b, equivalent to the inner product.',
       docIpDesc: 'Element-wise products summed up; accounts for both direction and magnitude. Larger magnitude + aligned direction yields a larger value. With normalized vectors, IP reduces to cosine similarity — the default in many vector databases.',
-      docIpRange: '(-∞, +∞); higher is more similar. Note: without normalization, IP conflates direction and magnitude and is not directly comparable.',
+      docIpRange: '(-∞, +∞); higher is more similar. Without normalization, IP conflates direction and magnitude and is not directly comparable.',
+      docIpNormRange: '[-1, 1]; reduces to cos(a,b).',
       docL2Desc: 'The straight-line distance in space: square root of summed squared differences per dimension. Smaller means more similar; 0 means identical. Reflects both direction and magnitude, and is more sensitive to outliers.',
       docL2Range: '[0, +∞); smaller is more similar (0 = identical). Unlike Cosine/IP this is a "distance", so in the heatmap warmer colors mean closer.',
+      docL2NormRange: '[0, 2]; max 2 when antipodal.',
       docL2sqDesc: 'L2 distance without the square root — just the sum of squared differences. Mathematically monotonic with L2 (identical ranking) but avoids the costly sqrt, a common engineering optimization in vector search (Faiss/IVF/PQ).',
       docL2sqRange: '[0, +∞); smaller is more similar. Relative ordering is identical to L2, only absolute values differ; ideal for ranking / Top-K retrieval where absolute distance is not needed.',
+      docL2sqNormRange: '[0, 4]; max 4 when antipodal.',
       ph_label: 'label',
       del: 'Delete',
       emptyVec: 'No vectors yet — click "Add vector" or "Import Excel" below',
