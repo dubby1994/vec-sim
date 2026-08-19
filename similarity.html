@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-i18n="title">向量相似度矩阵计算器 | Cosine / Inner Product / L2 在线计算</title>
+<meta name="description" content="在线向量相似度计算器，批量计算 N×M 向量相似度矩阵。支持余弦相似度(Cosine)、内积(Inner Product)、欧氏距离(L2)、欧氏距离平方(L2²)四种算法，支持 Excel 导入、热力图可视化、中英双语、深色模式。">
+<meta name="keywords" content="向量相似度,余弦相似度,cosine similarity,内积,inner product,L2距离,欧氏距离,向量检索,相似度矩阵,向量计算,embedding相似度,faiss,向量数据库">
+<meta name="author" content="Vector Similarity Calculator">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#4263eb">
+<link rel="canonical" href="https://example.com/similarity.html">
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="向量相似度矩阵计算器 | 在线 Cosine/IP/L2 计算">
+<meta property="og:description" content="批量计算 N×M 向量相似度矩阵，支持 Cosine、Inner Product、L2、L2² 四种算法，Excel 导入，热力图可视化。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:site_name" content="向量相似度矩阵计算器">
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="向量相似度矩阵计算器 | 在线 Cosine/IP/L2 计算">
+<meta name="twitter:description" content="批量计算 N×M 向量相似度矩阵，支持 Cosine、Inner Product、L2、L2² 四种算法，Excel 导入，热力图可视化。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%234263eb'/%3E%3Cstop offset='1' stop-color='%237048e8'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='url(%23g)'/%3E%3Cg fill='none' stroke='%23fff' stroke-width='3.2' stroke-linecap='round'%3E%3Cpath d='M16 20 L16 44'/%3E%3Cpath d='M32 16 L32 48'/%3E%3Cpath d='M48 22 L48 42'/%3E%3C/g%3E%3Cg fill='%23fff'%3E%3Ccircle cx='16' cy='20' r='3.6'/%3E%3Ccircle cx='16' cy='44' r='3.6'/%3E%3Ccircle cx='32' cy='16' r='3.6'/%3E%3Ccircle cx='32' cy='48' r='3.6'/%3E%3Ccircle cx='48' cy='22' r='3.6'/%3E%3Ccircle cx='48' cy='42' r='3.6'/%3E%3C/g%3E%3Cpath d='M16 20 Q32 8 48 22 M16 44 Q32 56 48 42' stroke='%23fff' stroke-width='2' fill='none' opacity='0.55'/%3E%3C/svg%3E">
+<!-- 结构化数据：WebApplication -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "向量相似度矩阵计算器",
+  "description": "在线向量相似度计算器，批量计算 N×M 向量相似度矩阵。支持余弦相似度(Cosine)、内积(Inner Product)、欧氏距离(L2)、欧氏距离平方(L2²)四种算法。",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "All",
+  "browserRequirements": "Requires JavaScript",
+  "inLanguage": ["zh-CN", "en"],
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "featureList": [
+    "余弦相似度 (Cosine Similarity)",
+    "内积 (Inner Product)",
+    "欧氏距离 (L2 Distance)",
+    "欧氏距离平方 (L2² Squared Distance)",
+    "N×M 相似度矩阵批量计算",
+    "Excel 导入 (.xlsx/.xls/.csv)",
+    "热力图可视化",
+    "中英双语",
+    "深色/浅色主题"
+  ]
+}
+</script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f7f8fa;
+    --card: #ffffff;
+    --border: #e8ebf0;
+    --border-strong: #d4d9e2;
+    --text: #1f2937;
+    --text-soft: #4b5563;
+    --text-mute: #8a94a6;
+    --primary: #4263eb;
+    --primary-dark: #364fc7;
+    --primary-soft: #edf2ff;
+    --accent: #0ca678;
+    --danger: #e03131;
+    --radius: 10px;
+    --shadow-sm: 0 1px 2px rgba(15,23,42,.04);
+    --shadow: 0 2px 8px rgba(15,23,42,.06);
+    /* 表格 sticky 背景色 */
+    --th-bg: #f5f7fa;
+    --th-corner-bg: #eef1f6;
+    --first-col-bg: #f8fafc;
+    --topbar-bg: rgba(255,255,255,.92);
+    --bg-soft: #f1f3f7;
+    --bg-input: #fcfdfe;
+    --bg-foot: #fbfcfd;
+    --head-grad: linear-gradient(180deg, #fbfcfd, #fff);
+    --bg-danger-hover: #fff5f5;
+    --row-input-bg: #fcfdfe;
+  }
+  /* Dark 主题 */
+  [data-theme="dark"] {
+    --bg: #0f1115;
+    --card: #1a1d24;
+    --border: #2a2f3a;
+    --border-strong: #3a4150;
+    --text: #e6e9ef;
+    --text-soft: #b8c0cc;
+    --text-mute: #7a8494;
+    --primary: #4c6ef5;
+    --primary-dark: #3b5bdb;
+    --primary-soft: #1e2a44;
+    --accent: #12b886;
+    --danger: #ff6b6b;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.3);
+    --shadow: 0 2px 8px rgba(0,0,0,.4);
+    --th-bg: #21252e;
+    --th-corner-bg: #1a1d24;
+    --first-col-bg: #1f2229;
+    --topbar-bg: rgba(26,29,36,.88);
+    --bg-soft: #21252e;
+    --bg-input: #161920;
+    --bg-foot: #161920;
+    --head-grad: linear-gradient(180deg, #1d2129, #1a1d24);
+    --bg-danger-hover: #2a1a1a;
+    --row-input-bg: #161920;
+    color-scheme: dark;
+  }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+    padding: 28px 20px 60px;
+  }
+  .wrap { max-width: 1600px; margin: 0 auto; }
+  @media (min-width: 1900px) { .wrap { max-width: 1800px; } }
+  body { padding-top: 76px; }
+  /* 合并页头：固定吸顶 */
+  .topbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: var(--topbar-bg);
+    backdrop-filter: saturate(180%) blur(8px);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 1px 6px rgba(15,23,42,.04);
+  }
+  .topbar-inner {
+    max-width: 1600px; margin: 0 auto; padding: 12px 20px;
+    display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+  }
+  @media (min-width: 1900px) { .topbar-inner { max-width: 1800px; } }
+  .brand { display: flex; align-items: center; gap: 10px; margin-right: 4px; }
+  .brand h1 { font-size: 18px; font-weight: 700; letter-spacing: -.01em; color: var(--text); white-space: nowrap; }
+  .brand .logo {
+    width: 30px; height: 30px; border-radius: 8px;
+    background: linear-gradient(135deg, #4263eb, #7048e8);
+    display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .brand .logo svg { width: 20px; height: 20px; }
+
+  /* 顶部控制栏 */
+  .toolbar .field { display: flex; align-items: center; gap: 8px; }
+  .toolbar .field > .lbl { font-size: 13px; font-weight: 600; color: var(--text-soft); }
+  .seg { display: inline-flex; background: var(--bg-soft); border-radius: 8px; padding: 3px; gap: 2px; }
+  .seg button {
+    border: none; background: transparent; cursor: pointer;
+    padding: 6px 14px; font-size: 13px; color: var(--text-soft);
+    border-radius: 6px; font-weight: 500; transition: all .15s;
+  }
+  .seg button:hover { color: var(--text); }
+  .seg button.active { background: var(--card); color: var(--primary); box-shadow: var(--shadow-sm); font-weight: 600; }
+  .num-input {
+    width: 56px; padding: 5px 8px; border: 1px solid var(--border-strong);
+    border-radius: 6px; font-size: 13px; text-align: center; color: var(--text);
+    background: var(--card);
+  }
+  .num-input:focus { outline: none; border-color: var(--primary); }
+  .check { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-soft); cursor: pointer; }
+  .check input { cursor: pointer; accent-color: var(--primary); }
+  .spacer { flex: 1; }
+  .btn {
+    border: 1px solid transparent; cursor: pointer; padding: 8px 18px;
+    font-size: 13px; font-weight: 600; border-radius: 8px; transition: all .15s;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: var(--primary-dark); }
+  .btn-ghost { background: var(--card); color: var(--text-soft); border-color: var(--border-strong); }
+  .btn-ghost:hover { color: var(--primary); border-color: var(--primary); background: var(--primary-soft); }
+  .btn-tiny { padding: 4px 10px; font-size: 12px; border-radius: 6px; }
+  /* 图标按钮（主题/语言切换） */
+  .icon-btn {
+    width: 34px; height: 34px; padding: 0; border: 1px solid var(--border-strong);
+    background: var(--card); color: var(--text-soft); border-radius: 8px;
+    cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+    transition: all .15s; flex-shrink: 0;
+  }
+  .icon-btn:hover { color: var(--primary); border-color: var(--primary); background: var(--primary-soft); }
+  .icon-btn svg { width: 18px; height: 18px; }
+  .lang-btn { width: auto; padding: 0 12px; font-size: 12px; font-weight: 700; letter-spacing: .02em; }
+  .topbar-tools { display: flex; align-items: center; gap: 8px; }
+
+  .status { font-size: 12px; color: var(--text-mute); }
+  .status.error { color: var(--danger); }
+  .status.ok { color: var(--accent); }
+
+  /* 双面板 */
+  .panels { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
+  .panel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+  .panel-head {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+    background: var(--head-grad);
+  }
+  .panel-head .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); }
+  .panel-head.right .dot { background: var(--accent); }
+  .panel-head h2 { font-size: 14px; font-weight: 600; color: var(--text); }
+  .panel-head .count {
+    font-size: 12px; color: var(--text-mute);
+    background: var(--bg-soft); padding: 2px 8px; border-radius: 10px;
+  }
+  .panel-head .actions { margin-left: auto; display: flex; gap: 6px; }
+
+  .vec-list {
+    padding: 12px 14px;
+    display: flex; flex-direction: column; gap: 8px;
+    min-height: 240px;
+  }
+  .vec-row {
+    display: grid;
+    grid-template-columns: 90px 1fr 28px;
+    gap: 8px; align-items: start;
+  }
+  .vec-row input, .vec-row textarea {
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 12.5px;
+    padding: 8px 10px;
+    border: 1px solid var(--border-strong);
+    border-radius: 7px;
+    color: var(--text);
+    background: var(--row-input-bg);
+    transition: border-color .15s, background .15s;
+    width: 100%;
+  }
+  .vec-row input:focus, .vec-row textarea:focus { outline: none; border-color: var(--primary); background: var(--card); box-shadow: 0 0 0 3px var(--primary-soft); }
+  .vec-row input.label { font-family: inherit; font-weight: 600; color: var(--text-soft); }
+  .vec-row textarea.vec {
+    resize: none;
+    overflow: hidden;
+    line-height: 1.5;
+    min-height: 36px;
+  }
+  .vec-row .del { margin-top: 4px; }
+  .vec-row .label { margin-top: 4px; }
+  .vec-row .del {
+    width: 28px; height: 28px; border: 1px solid var(--border-strong);
+    background: var(--card); border-radius: 7px; cursor: pointer;
+    color: var(--text-mute); font-size: 16px; line-height: 1;
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: all .15s;
+  }
+  .vec-row .del:hover { color: var(--danger); border-color: var(--danger); background: var(--bg-danger-hover); }
+  .panel-foot {
+    padding: 10px 14px; border-top: 1px dashed var(--border);
+    display: flex; gap: 8px; background: var(--bg-foot);
+  }
+  .empty-hint {
+    text-align: center; color: var(--text-mute); font-size: 13px;
+    padding: 60px 0; border: 1px dashed var(--border-strong); border-radius: 8px;
+    margin: 4px 0;
+  }
+
+  /* 结果区 */
+  .result-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .result-head {
+    padding: 12px 18px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    background: var(--head-grad);
+  }
+  .result-head h3 { font-size: 14px; font-weight: 600; color: var(--text); }
+  .result-head .meta { font-size: 12px; color: var(--text-mute); }
+  .result-head .opts { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+  .result-head .field { display: flex; align-items: center; gap: 6px; }
+  .result-head .field > .lbl { font-size: 12px; font-weight: 600; color: var(--text-soft); }
+  .result-body { padding: 16px 18px; overflow: visible; }
+  table { border-collapse: collapse; font-size: 12.5px; }
+  th, td {
+    border: 1px solid var(--border);
+    padding: 7px 12px; text-align: center; white-space: nowrap;
+    font-family: "SFMono-Regular", Consolas, monospace;
+  }
+  th { background: var(--th-bg); color: var(--text-soft); font-weight: 600; }
+  th.corner { background: var(--th-corner-bg); }
+  th.first-col, td.first-col {
+    text-align: left; font-weight: 600; color: var(--text-soft);
+    background: var(--first-col-bg); position: sticky; left: 0;
+    font-family: inherit;
+  }
+  thead th.first-col { position: sticky; left: 0; top: 0; z-index: 3; background: var(--th-corner-bg); }
+  thead th { position: sticky; top: 0; z-index: 2; }
+  td.cell { color: var(--text); font-variant-numeric: tabular-nums; }
+  .legend { font-size: 12px; color: var(--text-mute); padding: 12px 18px 16px; border-top: 1px solid var(--border); display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
+  .legend .bar {
+    width: 160px; height: 10px; border-radius: 5px;
+    background: linear-gradient(90deg, #dceefc, #fff, #fce3e3);
+    border: 1px solid var(--border);
+  }
+  .result-empty { text-align: center; color: var(--text-mute); padding: 60px 0; font-size: 14px; }
+
+  /* 算法多选区 */
+  .algo-field { gap: 4px; }
+  .algo-cb-wrap { padding: 3px 10px; border: 1px solid var(--border-strong); border-radius: 7px; cursor: pointer; font-size: 12px; }
+  .algo-cb-wrap:has(input:checked) { border-color: var(--primary); background: var(--primary-soft); color: var(--primary); font-weight: 600; }
+  .algo-cb-wrap input { margin-right: 4px; }
+
+  /* 多算法区块 */
+  .algo-block { margin-bottom: 28px; }
+  .algo-block:last-child { margin-bottom: 0; }
+  .algo-block-title {
+    font-size: 13px; font-weight: 700; color: var(--primary);
+    margin-bottom: 10px; padding-bottom: 6px;
+    border-bottom: 2px solid var(--primary); display: inline-block;
+  }
+
+  /* 拖放高亮 */
+  .panel.dragover { outline: 2px dashed var(--primary); outline-offset: -4px; }
+
+  /* 算法说明区 */
+  .algo-doc {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); box-shadow: var(--shadow-sm);
+    margin-top: 18px; overflow: hidden;
+  }
+  .algo-doc-head {
+    padding: 14px 20px; border-bottom: 1px solid var(--border);
+    background: var(--head-grad);
+  }
+  .algo-doc-head h3 { font-size: 15px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; }
+  .algo-doc-head h3 .ico { color: var(--primary); }
+  .algo-doc-head p { font-size: 12.5px; color: var(--text-mute); margin-top: 4px; }
+  .algo-doc-body { padding: 8px 20px 20px; }
+  .algo-doc-item {
+    padding: 16px 0; border-bottom: 1px dashed var(--border);
+  }
+  .algo-doc-item:last-child { border-bottom: none; }
+  .algo-doc-item .title { font-size: 14px; font-weight: 700; color: var(--primary); margin-bottom: 6px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .algo-doc-item .title .en { font-size: 12px; font-weight: 500; color: var(--text-mute); }
+  .algo-doc-item .desc { font-size: 13px; color: var(--text-soft); line-height: 1.7; margin-bottom: 10px; }
+  .algo-doc-item .formula {
+    font-family: "Cambria Math", "Latin Modern Math", "SFMono-Regular", Consolas, monospace;
+    font-size: 14px; color: var(--text);
+    background: var(--bg-soft); border: 1px solid var(--border);
+    border-radius: 7px; padding: 10px 14px; margin: 8px 0;
+    overflow-x: auto; white-space: nowrap;
+  }
+  .algo-doc-item .note { font-size: 12px; color: var(--text-mute); margin-top: 6px; }
+  .algo-doc-item .note b { color: var(--text-soft); font-weight: 600; }
+</style>
+<script>
+// 预设主题，避免闪烁
+(function () {
+  try {
+    var t = localStorage.getItem('vss-theme');
+    if (!t) t = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+})();
+</script>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner toolbar">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round">
+          <path d="M6 7v10M12 5v14M18 8v8"/>
+          <circle cx="6" cy="7" r="1.4" fill="#fff" stroke="none"/>
+          <circle cx="6" cy="17" r="1.4" fill="#fff" stroke="none"/>
+          <circle cx="12" cy="5" r="1.4" fill="#fff" stroke="none"/>
+          <circle cx="12" cy="19" r="1.4" fill="#fff" stroke="none"/>
+          <circle cx="18" cy="8" r="1.4" fill="#fff" stroke="none"/>
+          <circle cx="18" cy="16" r="1.4" fill="#fff" stroke="none"/>
+        </svg>
+      </span>
+      <h1 data-i18n="title">向量相似度矩阵计算器</h1>
+    </div>
+    <div class="spacer"></div>
+    <div class="topbar-tools">
+      <button class="icon-btn lang-btn" id="langToggle" aria-label="Switch language" title="Switch language">EN</button>
+      <button class="icon-btn" id="themeToggle" aria-label="切换主题" data-i18n-title="toggleTheme" data-i18n-aria="toggleTheme" title="切换主题">
+        <svg id="iconMoon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg id="iconSun" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      </button>
+    </div>
+    <button class="btn btn-ghost" id="downloadTpl" data-i18n="downloadTpl">下载模板</button>
+    <button class="btn btn-ghost" id="loadSample" data-i18n="loadSample">载入示例</button>
+    <button class="btn btn-ghost" id="clearAll" data-i18n="clear">清空</button>
+  </div>
+</header>
+<main class="wrap">
+
+  <section class="panels" aria-label="向量输入区">
+    <div class="panel" id="leftPanel" data-side="left">
+      <div class="panel-head">
+        <span class="dot"></span>
+        <h2 data-i18n="leftSet">左向量集合 (N)</h2>
+        <span class="count" id="leftCount">0</span>
+        <div class="actions">
+          <button class="btn btn-ghost btn-tiny" data-action="import" data-side="left" data-i18n="excelImport">Excel 导入</button>
+          <input type="file" id="fileLeft" accept=".xlsx,.xls,.csv" hidden>
+        </div>
+      </div>
+      <div class="vec-list" id="leftList"></div>
+      <div class="panel-foot">
+        <button class="btn btn-ghost btn-tiny" data-action="add" data-side="left" data-i18n="addVec">+ 添加向量</button>
+      </div>
+    </div>
+
+    <div class="panel right" id="rightPanel" data-side="right">
+      <div class="panel-head right">
+        <span class="dot"></span>
+        <h2 data-i18n="rightSet">右向量集合 (M)</h2>
+        <span class="count" id="rightCount">0</span>
+        <div class="actions">
+          <button class="btn btn-ghost btn-tiny" data-action="import" data-side="right" data-i18n="excelImport">Excel 导入</button>
+          <input type="file" id="fileRight" accept=".xlsx,.xls,.csv" hidden>
+        </div>
+      </div>
+      <div class="vec-list" id="rightList"></div>
+      <div class="panel-foot">
+        <button class="btn btn-ghost btn-tiny" data-action="add" data-side="right" data-i18n="addVec">+ 添加向量</button>
+        <label class="check" style="margin-left:auto"><input type="checkbox" id="mirrorLeft"> <span data-i18n="mirrorLeft">同左向量</span></label>
+      </div>
+    </div>
+  </section>
+
+  <section class="result-card" aria-label="相似度计算结果">
+    <div class="result-head">
+      <h2 data-i18n="matrix">相似度矩阵</h2>
+      <span class="meta" id="resultMeta"></span>
+      <div class="opts">
+        <div class="field algo-field">
+          <span class="lbl" data-i18n="algorithm">算法</span>
+          <label class="check algo-cb-wrap"><input type="checkbox" class="algo-cb" value="cos" checked><span>Cosine</span></label>
+          <label class="check algo-cb-wrap"><input type="checkbox" class="algo-cb" value="ip" checked><span>Inner Product</span></label>
+          <label class="check algo-cb-wrap"><input type="checkbox" class="algo-cb" value="l2" checked><span>L2 Distance</span></label>
+          <label class="check algo-cb-wrap"><input type="checkbox" class="algo-cb" value="l2sq" checked><span>L2² Distance</span></label>
+        </div>
+        <div class="field">
+          <span class="lbl" data-i18n="precision">小数位</span>
+          <input type="number" id="precision" class="num-input" value="6" min="0" max="8">
+        </div>
+        <label class="check"><input type="checkbox" id="showLabels" checked><span data-i18n="showLabels">显示标签</span></label>
+        <label class="check"><input type="checkbox" id="heatmap" checked><span data-i18n="heatmap">热力图着色</span></label>
+      </div>
+    </div>
+    <div class="result-body" id="result">
+      <div class="result-empty" data-i18n="emptyHint">点击「计算」生成 N × M 相似度矩阵</div>
+    </div>
+    <div class="legend" id="legend" style="display:none">
+      <span id="legendLabel" data-i18n="lowSim">低相似度</span>
+      <div class="bar"></div>
+      <span data-i18n="highSim">高相似度</span>
+      <span style="margin-left:auto" id="legendInfo"></span>
+    </div>
+  </section>
+
+  <section class="algo-doc" aria-label="相似度算法说明">
+    <div class="algo-doc-head">
+      <h2><span class="ico" aria-hidden="true">∑</span> <span data-i18n="docTitle">相似度算法说明</span></h2>
+      <p data-i18n="docSubtitle">以下为三种常用向量相似度算法的通俗解释与数学定义，帮助你理解结果含义。</p>
+    </div>
+    <div class="algo-doc-body">
+
+      <article class="algo-doc-item">
+        <h3 class="title">Cosine <span class="en">/ 余弦相似度</span></h3>
+        <p class="desc" data-i18n="docCosDesc">衡量两个向量在方向上的夹角，忽略长度，只看"朝向是否一致"。两个向量越平行，值越接近 1；垂直则为 0；反向则为 -1。常用于文本/语义检索，因为它对向量模长不敏感，只关注内容方向。</p>
+        <p class="formula">sim(a, b) = (a · b) / (‖a‖ × ‖b‖) = Σ(aᵢ × bᵢ) / ( √Σaᵢ² × √Σbᵢ² )</p>
+        <p class="note"><b data-i18n="docRange">值域</b><span data-i18n="docCosRange">[-1, 1]，越大越相似。若向量已归一化（‖a‖=‖b‖=1），则 cos(a,b) = a·b，与内积等价。</span></p>
+      </article>
+
+      <article class="algo-doc-item">
+        <h3 class="title">Inner Product <span class="en">/ 内积（点积）</span></h3>
+        <p class="desc" data-i18n="docIpDesc">两个向量对应位置相乘再求和，同时考虑方向和长度。向量越长、方向越一致，值越大。在向量已归一化的前提下，内积退化为余弦相似度，这也是很多向量数据库默认用 IP 检索的原因。</p>
+        <p class="formula">sim(a, b) = a · b = Σ(aᵢ × bᵢ)</p>
+        <p class="note"><b data-i18n="docRange">值域</b><span data-i18n="docIpRange">(-∞, +∞)，越大越相似。注意：未归一化时，内积大小同时受方向与模长影响，无法直接横向比较。</span></p>
+      </article>
+
+      <article class="algo-doc-item">
+        <h3 class="title">L2 Distance <span class="en">/ 欧氏距离</span></h3>
+        <p class="desc" data-i18n="docL2Desc">两点在空间中的"直线距离"，即各维度差值平方和再开方。距离越小表示越相似，0 表示完全相同。它同时反映方向和长度的差异，对异常值（某个维度偏差大）更敏感。</p>
+        <p class="formula">d(a, b) = ‖a − b‖₂ = √( Σ(aᵢ − bᵢ)² )</p>
+        <p class="note"><b data-i18n="docRange">值域</b><span data-i18n="docL2Range">[0, +∞)，越小越相似（0 表示完全相同）。与 Cosine/IP 不同，这里是"距离"而非"相似度"，因此热力图中颜色越暖代表越接近。</span></p>
+      </article>
+
+      <article class="algo-doc-item">
+        <h3 class="title">L2² Distance <span class="en">/ 欧氏距离平方</span></h3>
+        <p class="desc" data-i18n="docL2sqDesc">L2 距离去掉开方运算，直接保留平方和。数学上与 L2 单调等价（排序结果完全一致），但省去了昂贵的 sqrt 计算，是向量检索（如 Faiss/IVF/PQ）中常用的工程优化手段。</p>
+        <p class="formula">d²(a, b) = Σ(aᵢ − bᵢ)²</p>
+        <p class="note"><b data-i18n="docRange">值域</b><span data-i18n="docL2sqRange">[0, +∞)，越小越相似。与 L2 的相对大小关系完全一致，仅绝对值不同；适合用于排序、Top-K 检索等无需绝对距离的场景。</span></p>
+      </article>
+
+    </div>
+  </section>
+
+<noscript>
+  <p style="text-align:center;padding:40px;font-size:14px;color:#e03131;">本工具需要启用 JavaScript 才能运行。/ This tool requires JavaScript to be enabled.</p>
+</noscript>
+</main>
+
+<script src="vendor/xlsx.full.min.js"></script>
+<script>
+// 容错：若本地 xlsx 未加载，禁用 Excel 导入并给出提示
+if (typeof XLSX === 'undefined') {
+  window.__XLSX_MISSING = true;
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('[data-action="import"]').forEach(b => {
+      b.disabled = true;
+      b.setAttribute('data-xlsx-missing', '1');
+      b.style.opacity = 0.5;
+    });
+  });
+}
+</script>
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const state = {
+    algos: ['cos', 'ip', 'l2', 'l2sq'], // 已选算法列表
+    left: [],   // [{label, vec:[..]}]
+    right: [],
+    lastResults: null,       // { algos, lefts, rights, matrices: {algo: matrix} }
+  };
+
+  // ---------- 国际化 ----------
+  const I18N = {
+    zh: {
+      title: '向量相似度矩阵计算器',
+      algorithm: '算法',
+      toggleTheme: '切换主题',
+      downloadTpl: '下载模板',
+      loadSample: '载入示例',
+      clear: '清空',
+      compute: '计算',
+      leftSet: '左向量集合 (N)',
+      rightSet: '右向量集合 (M)',
+      excelImport: 'Excel 导入',
+      addVec: '+ 添加向量',
+      mirrorLeft: '同左向量',
+      matrix: '相似度矩阵',
+      precision: '小数位',
+      showLabels: '显示标签',
+      heatmap: '热力图着色',
+      emptyHint: '点击「计算」生成 N × M 相似度矩阵',
+      lowSim: '低相似度',
+      highSim: '高相似度',
+      docTitle: '相似度算法说明',
+      docSubtitle: '以下为三种常用向量相似度算法的通俗解释与数学定义，帮助你理解结果含义。',
+      docRange: '值域：',
+      docCosDesc: '衡量两个向量在方向上的夹角，忽略长度，只看"朝向是否一致"。两个向量越平行，值越接近 1；垂直则为 0；反向则为 -1。常用于文本/语义检索，因为它对向量模长不敏感，只关注内容方向。',
+      docCosRange: '[-1, 1]，越大越相似。若向量已归一化（‖a‖=‖b‖=1），则 cos(a,b) = a·b，与内积等价。',
+      docIpDesc: '两个向量对应位置相乘再求和，同时考虑方向和长度。向量越长、方向越一致，值越大。在向量已归一化的前提下，内积退化为余弦相似度，这也是很多向量数据库默认用 IP 检索的原因。',
+      docIpRange: '(-∞, +∞)，越大越相似。注意：未归一化时，内积大小同时受方向与模长影响，无法直接横向比较。',
+      docL2Desc: '两点在空间中的"直线距离"，即各维度差值平方和再开方。距离越小表示越相似，0 表示完全相同。它同时反映方向和长度的差异，对异常值（某个维度偏差大）更敏感。',
+      docL2Range: '[0, +∞)，越小越相似（0 表示完全相同）。与 Cosine/IP 不同，这里是"距离"而非"相似度"，因此热力图中颜色越暖代表越接近。',
+      docL2sqDesc: 'L2 距离去掉开方运算，直接保留平方和。数学上与 L2 单调等价（排序结果完全一致），但省去了昂贵的 sqrt 计算，是向量检索（如 Faiss/IVF/PQ）中常用的工程优化手段。',
+      docL2sqRange: '[0, +∞)，越小越相似。与 L2 的相对大小关系完全一致，仅绝对值不同；适合用于排序、Top-K 检索等无需绝对距离的场景。',
+      ph_label: '标签',
+      del: '删除',
+      emptyVec: '暂无向量，点击下方「添加向量」或「Excel 导入」',
+      mirrorHint: '已选择「同左向量」，计算时自动复用左侧数据',
+      noData: '无数据',
+      excelMissing: 'xlsx 库未加载，请先执行 download-deps.sh',
+      excelMissingStatus: '✗ Excel 导入不可用：请先在项目根目录执行 bash download-deps.sh 下载 xlsx 库',
+      tplMissing: '✗ 模板生成不可用：请先执行 download-deps.sh 下载 xlsx 库',
+      tplOk: '✓ 模板已下载，按格式填入数据后导入',
+      imported: '✓ 已导入 {n} 个向量到{side}集合',
+      importFailed: '✗ 导入失败: ',
+      errDim: '维度不匹配: {a} vs {b}',
+      errAlgo: '未知算法: ',
+      errLeftEmpty: '左向量为空',
+      errRightEmpty: '右向量为空',
+      errNoAlgo: '请至少选择一种算法',
+      errLeftDim: '左向量维度不一致',
+      errRightDim: '右向量维度不一致',
+      errExcelEmpty: 'Excel 内容为空',
+      errNoRows: '未解析到有效数据行',
+      leftSetShort: '左',
+      rightSetShort: '右',
+      pairs: '对',
+      legendLowL2: '距离大(相似低)',
+      algoCos: '余弦相似度',
+      algoIp: '内积',
+      algoL2: 'L2 欧氏距离',
+      algoL2sq: 'L2² 欧氏距离平方',
+      langLabel: 'EN',
+    },
+    en: {
+      title: 'Vector Similarity Matrix Calculator',
+      algorithm: 'Algorithm',
+      toggleTheme: 'Toggle theme',
+      downloadTpl: 'Template',
+      loadSample: 'Sample',
+      clear: 'Clear',
+      compute: 'Compute',
+      leftSet: 'Left Vectors (N)',
+      rightSet: 'Right Vectors (M)',
+      excelImport: 'Import Excel',
+      addVec: '+ Add vector',
+      mirrorLeft: 'Same as left',
+      matrix: 'Similarity Matrix',
+      precision: 'Precision',
+      showLabels: 'Labels',
+      heatmap: 'Heatmap',
+      emptyHint: 'Click "Compute" to generate the N × M similarity matrix',
+      lowSim: 'Low',
+      highSim: 'High',
+      docTitle: 'Similarity Algorithms',
+      docSubtitle: 'Plain-language explanations and mathematical definitions of three common vector similarity algorithms.',
+      docRange: 'Range: ',
+      docCosDesc: 'Measures the angle between two vectors, ignoring magnitude — only "direction alignment" matters. Parallel vectors score ≈1, orthogonal ≈0, opposite ≈-1. Widely used in text/semantic retrieval because it is magnitude-insensitive.',
+      docCosRange: '[-1, 1]; higher is more similar. If vectors are normalized (‖a‖=‖b‖=1), cos(a,b) = a·b, equivalent to the inner product.',
+      docIpDesc: 'Element-wise products summed up; accounts for both direction and magnitude. Larger magnitude + aligned direction yields a larger value. With normalized vectors, IP reduces to cosine similarity — the default in many vector databases.',
+      docIpRange: '(-∞, +∞); higher is more similar. Note: without normalization, IP conflates direction and magnitude and is not directly comparable.',
+      docL2Desc: 'The straight-line distance in space: square root of summed squared differences per dimension. Smaller means more similar; 0 means identical. Reflects both direction and magnitude, and is more sensitive to outliers.',
+      docL2Range: '[0, +∞); smaller is more similar (0 = identical). Unlike Cosine/IP this is a "distance", so in the heatmap warmer colors mean closer.',
+      docL2sqDesc: 'L2 distance without the square root — just the sum of squared differences. Mathematically monotonic with L2 (identical ranking) but avoids the costly sqrt, a common engineering optimization in vector search (Faiss/IVF/PQ).',
+      docL2sqRange: '[0, +∞); smaller is more similar. Relative ordering is identical to L2, only absolute values differ; ideal for ranking / Top-K retrieval where absolute distance is not needed.',
+      ph_label: 'label',
+      del: 'Delete',
+      emptyVec: 'No vectors yet — click "Add vector" or "Import Excel" below',
+      mirrorHint: '"Same as left" is on — right set reuses the left data at compute time',
+      noData: 'No data',
+      excelMissing: 'xlsx library not loaded — run download-deps.sh first',
+      excelMissingStatus: '✗ Excel import unavailable: run "bash download-deps.sh" to download the xlsx library',
+      tplMissing: '✗ Template unavailable: run download-deps.sh to download the xlsx library',
+      tplOk: '✓ Template downloaded — fill in your data and import',
+      imported: '✓ Imported {n} vector(s) into {side} set',
+      importFailed: '✗ Import failed: ',
+      errDim: 'Dimension mismatch: {a} vs {b}',
+      errAlgo: 'Unknown algorithm: ',
+      errLeftEmpty: 'Left vectors are empty',
+      errRightEmpty: 'Right vectors are empty',
+      errNoAlgo: 'Please select at least one algorithm',
+      errLeftDim: 'Left vectors have inconsistent dimensions',
+      errRightDim: 'Right vectors have inconsistent dimensions',
+      errExcelEmpty: 'Excel content is empty',
+      errNoRows: 'No valid data rows found',
+      leftSetShort: 'left',
+      rightSetShort: 'right',
+      pairs: 'pairs',
+      legendLowL2: 'Far (low sim.)',
+      algoCos: 'Cosine Similarity',
+      algoIp: 'Inner Product',
+      algoL2: 'L2 (Euclidean) Distance',
+      algoL2sq: 'L2² (Squared Euclidean) Distance',
+      langLabel: '中',
+    },
+  };
+  let curLang = 'zh';
+  let lastLegend = null; // { algo, min, max, n, m, total, precision }
+  function t(key, vars) {
+    let s = (I18N[curLang] && I18N[curLang][key]) || (I18N.zh[key]) || key;
+    if (vars) for (const k in vars) s = s.replace('{' + k + '}', vars[k]);
+    return s;
+  }
+  function applyLang(lang) {
+    curLang = lang;
+    document.documentElement.setAttribute('data-lang', lang);
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      el.textContent = t(el.dataset.i18n);
+    });
+    document.querySelectorAll('[data-i18n-title]').forEach(el => {
+      el.title = t(el.dataset.i18nTitle);
+    });
+    document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+      el.placeholder = t(el.dataset.i18nPh);
+    });
+    document.querySelectorAll('[data-i18n-aria]').forEach(el => {
+      el.setAttribute('aria-label', t(el.dataset.i18nAria));
+    });
+    // xlsx 缺失时的禁用按钮提示
+    document.querySelectorAll('[data-xlsx-missing="1"]').forEach(b => { b.title = t('excelMissing'); });
+    // 语言切换按钮显示目标语言
+    $('langToggle').textContent = lang === 'zh' ? '中' : 'EN';
+    $('langToggle').title = lang === 'zh' ? '当前：中文' : 'Current: English';
+    try { localStorage.setItem('vss-lang', lang); } catch (e) {}
+    // 重新渲染动态文本（占位提示、空状态等）
+    refreshDynamicText();
+  }
+  function refreshDynamicText() {
+    // 空列表提示
+    if (state.left.length === 0) $('leftList').innerHTML = `<div class="empty-hint">${t('emptyVec')}</div>`;
+    if (state.right.length === 0 && !$('mirrorLeft').checked) $('rightList').innerHTML = `<div class="empty-hint">${t('emptyVec')}</div>`;
+    if ($('mirrorLeft').checked) $('rightList').innerHTML = `<div class="empty-hint">${t('mirrorHint')}</div>`;
+    // 结果区空状态
+    if ($('result').querySelector('.result-empty')) $('result').innerHTML = `<div class="result-empty">${t('emptyHint')}</div>`;
+    // 行内 placeholder / title
+    document.querySelectorAll('input.label').forEach(el => el.placeholder = t('ph_label'));
+    document.querySelectorAll('button.del').forEach(el => el.title = t('del'));
+    // 图例标签（计算后根据算法切换）
+    if (lastLegend) updateLegendText();
+  }
+
+  // ---------- 向量行渲染 ----------
+  function makeRow(side, item, idx) {
+    const row = document.createElement('div');
+    row.className = 'vec-row';
+    row.innerHTML = `
+      <input class="label" type="text" placeholder="${t('ph_label')}" value="${escapeAttr(item.label || (side === 'left' ? 'L' : 'R') + (idx + 1))}">
+      <textarea class="vec" rows="1" placeholder="1.0, 2.0, 3.0 ..." >${escapeHtml((item.vec || []).join(', '))}</textarea>
+      <button class="del" title="${t('del')}">×</button>
+    `;
+    const [labelIn, vecIn, delBtn] = row.querySelectorAll('input, textarea, button');
+
+    // 自适应高度
+    const autoGrow = () => {
+      vecIn.style.height = 'auto';
+      vecIn.style.height = Math.max(36, vecIn.scrollHeight) + 'px';
+    };
+
+    labelIn.addEventListener('input', () => {
+      item.label = labelIn.value;
+    });
+    vecIn.addEventListener('input', () => {
+      item.vec = parseVecString(vecIn.value);
+      updateCounts();
+      autoGrow();
+    });
+    delBtn.addEventListener('click', () => {
+      const arr = state[side];
+      const i = arr.indexOf(item);
+      if (i >= 0) arr.splice(i, 1);
+      renderList(side);
+      updateCounts();
+    });
+    return row;
+  }
+
+  function parseVecString(s) {
+    if (!s) return [];
+    const body = s.replace(/^\[|\]$/g, '').trim();
+    if (!body) return [];
+    return body.split(/[\s,;]+/).filter(x => x.length).map(Number);
+  }
+
+  function renderList(side) {
+    const list = $(side === 'left' ? 'leftList' : 'rightList');
+    list.innerHTML = '';
+    const arr = state[side];
+    if (arr.length === 0) {
+      list.innerHTML = `<div class="empty-hint">${t('emptyVec')}</div>`;
+      return;
+    }
+    arr.forEach((item, i) => list.appendChild(makeRow(side, item, i)));
+    // 插入 DOM 后再自适应高度，scrollHeight 才准确
+    requestAnimationFrame(() => {
+      list.querySelectorAll('textarea.vec').forEach(t => {
+        t.style.height = 'auto';
+        t.style.height = Math.max(36, t.scrollHeight) + 'px';
+      });
+    });
+  }
+
+  function addVec(side, item) {
+    if (!item) item = { label: '', vec: [] };
+    state[side].push(item);
+    renderList(side);
+    updateCounts();
+    scheduleCompute();
+    // 滚动到底
+    const list = $(side === 'left' ? 'leftList' : 'rightList');
+    list.scrollTop = list.scrollHeight;
+  }
+
+  function updateCounts() {
+    $('leftCount').textContent = state.left.filter(v => v.vec && v.vec.length).length;
+    $('rightCount').textContent = state.right.filter(v => v.vec && v.vec.length).length;
+  }
+
+  // 解析单个单元格中的向量字符串，支持 , ; 空格 | 分隔及方括号
+  function parseVecCell(v) {
+    if (v == null) return [];
+    if (typeof v === 'number') return [v];
+    const s = String(v).replace(/^\[|\]$/g, '').trim();
+    if (!s) return [];
+    return s.split(/[\s,;|]+/).filter(x => x.length).map(Number);
+  }
+
+  // ---------- 算法 ----------
+  function dot(a, b) { let s = 0; for (let i = 0; i < a.length; i++) s += a[i] * b[i]; return s; }
+  function norm(a) { let s = 0; for (let i = 0; i < a.length; i++) s += a[i] * a[i]; return Math.sqrt(s); }
+  function similarity(a, b, algo) {
+    if (a.length !== b.length) throw new Error(t('errDim', { a: a.length, b: b.length }));
+    if (algo === 'ip') return dot(a, b);
+    if (algo === 'cos') {
+      const na = norm(a), nb = norm(b);
+      if (na === 0 || nb === 0) return 0;
+      return dot(a, b) / (na * nb);
+    }
+    if (algo === 'l2') {
+      let s = 0;
+      for (let i = 0; i < a.length; i++) { const d = a[i] - b[i]; s += d * d; }
+      return Math.sqrt(s);
+    }
+    if (algo === 'l2sq') {
+      let s = 0;
+      for (let i = 0; i < a.length; i++) { const d = a[i] - b[i]; s += d * d; }
+      return s; // 工程实现：不开方，节省 sqrt 成本
+    }
+    throw new Error(t('errAlgo') + algo);
+  }
+
+  // ---------- 淡色热力图 ----------
+  // 浅蓝(#dceefc) -> 白 -> 浅红(#fce3e3)，文字始终深色可读
+  function heatColor(val, min, max, algo) {
+    if (max === min) return '#ffffff';
+    let t = (val - min) / (max - min);
+    if (algo === 'l2' || algo === 'l2sq') t = 1 - t; // 距离小 => 相似高
+    // 三段插值
+    let r, g, b;
+    if (t < 0.5) {
+      const k = t / 0.5; // 0..1
+      r = lerp(0xdc, 0xff, k);
+      g = lerp(0xee, 0xff, k);
+      b = lerp(0xfc, 0xff, k);
+    } else {
+      const k = (t - 0.5) / 0.5; // 0..1
+      r = lerp(0xff, 0xfc, k);
+      g = lerp(0xff, 0xe3, k);
+      b = lerp(0xff, 0xe3, k);
+    }
+    return `rgb(${r|0},${g|0},${b|0})`;
+  }
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
+  function algoLabel(algo) {
+    return algo === 'cos' ? 'Cosine' : algo === 'ip' ? 'Inner Product' : algo === 'l2' ? 'L2 Distance' : algo === 'l2sq' ? 'L2² Distance' : algo;
+  }
+
+  // ---------- 渲染结果 ----------
+  function renderResults(res, _ignored, precision, showLabels, heatmap) {
+    const result = $('result');
+    const legend = $('legend');
+    if (!res || !res.algos.length) {
+      result.innerHTML = `<div class="result-empty">${t('noData')}</div>`;
+      legend.style.display = 'none';
+      return;
+    }
+
+    const fmt = (v) => {
+      if (!isFinite(v)) return String(v);
+      const n = Number(v.toFixed(precision));
+      return n.toString();
+    };
+
+    let html = '';
+    // 逐个算法渲染独立区块
+    for (let ai = 0; ai < res.algos.length; ai++) {
+      const algo = res.algos[ai];
+      const matrix = res.matrices[algo];
+      if (!matrix || !matrix.length || !matrix[0].length) continue;
+
+      // 区块标题
+      html += `<div class="algo-block" data-algo="${algo}">`;
+      if (res.algos.length > 1) {
+        html += `<div class="algo-block-title">${algoLabel(algo)}</div>`;
+      }
+
+      // 该算法的值域，用于热力图配色
+      let min = Infinity, max = -Infinity;
+      for (const row of matrix) for (const v of row) { if (v < min) min = v; if (v > max) max = v; }
+
+      html += '<table><thead><tr>';
+      html += `<th class="corner first-col">${showLabels ? 'L \\ R' : '#'}</th>`;
+      for (let j = 0; j < res.rights.length; j++) {
+        html += `<th>${escapeHtml(showLabels ? res.rights[j].label : 'R' + (j + 1))}</th>`;
+      }
+      html += '</tr></thead><tbody>';
+      for (let i = 0; i < res.lefts.length; i++) {
+        html += '<tr>';
+        html += `<td class="first-col">${escapeHtml(showLabels ? res.lefts[i].label : 'L' + (i + 1))}</td>`;
+        for (let j = 0; j < res.rights.length; j++) {
+          const v = matrix[i][j];
+          const style = heatmap ? ` style="background:${heatColor(v, min, max, algo)}"` : '';
+          html += `<td class="cell"${style}>${fmt(v)}</td>`;
+        }
+        html += '</tr>';
+      }
+      html += '</tbody></table>';
+      html += '</div>'; // .algo-block
+    }
+    result.innerHTML = html;
+
+    // 图例：取第一个算法作为代表信息
+    const firstAlgo = res.algos[0];
+    const firstMatrix = res.matrices[firstAlgo];
+    let min = Infinity, max = -Infinity;
+    for (const row of firstMatrix) for (const v of row) { if (v < min) min = v; if (v > max) max = v; }
+    legend.style.display = heatmap ? '' : 'none';
+    lastLegend = { algo: firstAlgo, min, max, n: res.lefts.length, m: res.rights.length, total: res.lefts.length * res.rights.length, heatmap, algos: res.algos };
+    updateLegendText();
+  }
+
+  // 根据 lastLegend 刷新图例文本（用于语言切换后重译）
+  function updateLegendText() {
+    if (!lastLegend) return;
+    const { algos, n, m, total } = lastLegend;
+    const precision = parseInt($('precision').value) || 6;
+    const fmt = (v) => isFinite(v) ? Number(v.toFixed(precision)).toString() : String(v);
+    const algoName = (a) => a === 'cos' ? t('algoCos') : a === 'ip' ? t('algoIp') : a === 'l2' ? t('algoL2') : t('algoL2sq');
+    const names = (algos || [lastLegend.algo]).map(algoName);
+    $('legendInfo').textContent = `${names.join(' / ')} · ${n}×${m} = ${total} ${t('pairs')}`;
+    // 图例冷暖标签：含 l2/l2sq 时显示距离语义，否则相似度
+    const hasL2 = (algos || []).some(a => a === 'l2' || a === 'l2sq');
+    $('legendLabel').textContent = hasL2 ? (curLang === 'zh' ? '距离/相似度低' : 'Far/Low') : t('lowSim');
+  }
+
+  // ---------- 主流程 ----------
+  function getSelectedAlgos() {
+    return Array.from(document.querySelectorAll('.algo-cb:checked')).map(cb => cb.value);
+  }
+
+  function compute(silent) {
+    try {
+      const algos = getSelectedAlgos();
+      if (algos.length === 0) throw new Error(t('errNoAlgo'));
+
+      const lefts = state.left.filter(v => v.vec && v.vec.length);
+      let rights = state.right.filter(v => v.vec && v.vec.length);
+      if ($('mirrorLeft').checked) rights = lefts.slice();
+      if (lefts.length === 0) throw new Error(t('errLeftEmpty'));
+      if (rights.length === 0) throw new Error(t('errRightEmpty'));
+
+      const dim = lefts[0].vec.length;
+      for (const r of lefts) if (r.vec.length !== dim) throw new Error(t('errLeftDim'));
+      for (const r of rights) if (r.vec.length !== dim) throw new Error(t('errRightDim'));
+
+      // 为每种算法计算矩阵
+      const matrices = {};
+      for (const algo of algos) {
+        const matrix = [];
+        for (let i = 0; i < lefts.length; i++) {
+          const row = [];
+          for (let j = 0; j < rights.length; j++) {
+            row.push(similarity(lefts[i].vec, rights[j].vec, algo));
+          }
+          matrix.push(row);
+        }
+        matrices[algo] = matrix;
+      }
+
+      state.lastResults = { algos, lefts, rights, matrices };
+
+      const precision = parseInt($('precision').value) || 6;
+      const showLabels = $('showLabels').checked;
+      const heatmap = $('heatmap').checked;
+      renderResults(state.lastResults, null, precision, showLabels, heatmap);
+    } catch (e) {
+      // 静默：输入过程中数据无效时不报错
+    }
+  }
+
+  // ---------- Excel 导入 ----------
+  function importExcel(file, side) {
+    if (typeof XLSX === 'undefined') {
+      setStatus(t('excelMissingStatus'), 'error');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = new Uint8Array(e.target.result);
+        const wb = XLSX.read(data, { type: 'array' });
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(ws, { header: 1, blankrows: false });
+        if (!rows.length) throw new Error(t('errExcelEmpty'));
+
+        const arr = [];
+        for (let i = 0; i < rows.length; i++) {
+          const r = rows[i];
+          if (!r || r.length === 0) continue;
+
+          let label, vec;
+          if (r.length === 1) {
+            // 单列：纯向量，无标签
+            label = `${side === 'left' ? 'L' : 'R'}${arr.length + 1}`;
+            vec = parseVecCell(r[0]);
+          } else if (r.length === 2) {
+            // 两列：label + vector 字符串
+            label = String(r[0]);
+            vec = parseVecCell(r[1]);
+          } else {
+            // 兼容旧多列格式：第一列 label，其余列为各维度数值
+            label = String(r[0]);
+            vec = r.slice(1).map(x => Number(x));
+          }
+          // 跳过表头：标签为 "label" 或向量解析失败
+          if (/^label$/i.test(label) || !vec.length || vec.some(x => Number.isNaN(x))) continue;
+          arr.push({ label, vec });
+        }
+        if (arr.length === 0) throw new Error(t('errNoRows'));
+        state[side] = arr;
+        renderList(side);
+        updateCounts();
+        scheduleCompute();
+        setStatus(t('imported', { n: arr.length, side: t(side === 'left' ? 'leftSetShort' : 'rightSetShort') }), 'ok');
+      } catch (err) {
+        setStatus(t('importFailed') + err.message, 'error');
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  // 临时浮层提示（用于导入/模板反馈）
+  let toastTimer = null;
+  function setStatus(msg, type) {
+    if (!msg) return;
+    let toast = document.getElementById('toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'toast';
+      toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;z-index:200;box-shadow:0 4px 16px rgba(0,0,0,.18);background:var(--card);border:1px solid var(--border-strong);color:var(--text);transition:opacity .2s;';
+      document.body.appendChild(toast);
+    }
+    toast.textContent = msg;
+    toast.style.color = type === 'error' ? 'var(--danger)' : type === 'ok' ? 'var(--accent)' : 'var(--text)';
+    toast.style.opacity = '1';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { toast.style.opacity = '0'; }, 2600);
+  }
+
+  // ---------- 工具 ----------
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+  function escapeAttr(s) {
+    return String(s).replace(/"/g, '&quot;');
+  }
+
+  // ---------- 事件 ----------
+  // 主题切换
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    const dark = theme === 'dark';
+    $('iconSun').style.display = dark ? '' : 'none';
+    $('iconMoon').style.display = dark ? 'none' : '';
+    try { localStorage.setItem('vss-theme', theme); } catch (e) {}
+  }
+  (function initTheme() {
+    let theme;
+    try { theme = localStorage.getItem('vss-theme'); } catch (e) {}
+    if (!theme) theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    applyTheme(theme);
+  })();
+  $('themeToggle').addEventListener('click', () => {
+    const cur = document.documentElement.getAttribute('data-theme') || 'light';
+    applyTheme(cur === 'dark' ? 'light' : 'dark');
+  });
+
+  // 算法多选：至少保留一个
+  document.querySelectorAll('.algo-cb').forEach(cb => {
+    cb.addEventListener('click', () => {
+      const checked = getSelectedAlgos();
+      if (checked.length === 0) {
+        cb.checked = true; // 阻止取消最后一个
+      }
+    });
+  });
+
+  // 任意输入变更：实时重算（带防抖）
+  let computeTimer = null;
+  function scheduleCompute() {
+    clearTimeout(computeTimer);
+    computeTimer = setTimeout(() => { compute(true); }, 80);
+  }
+
+  // 监听结果区选项
+  $('precision').addEventListener('input', scheduleCompute);
+  $('showLabels').addEventListener('change', scheduleCompute);
+  $('heatmap').addEventListener('change', scheduleCompute);
+  document.querySelectorAll('.algo-cb').forEach(cb => cb.addEventListener('change', scheduleCompute));
+
+  // 监听向量输入：捕获整个 panels 区的 input 事件（含动态新增行）
+  $('leftList').addEventListener('input', scheduleCompute);
+  $('rightList').addEventListener('input', scheduleCompute);
+  // 删除行、添加行也触发
+  $('leftList').addEventListener('click', (e) => { if (e.target.closest('.del')) scheduleCompute(); });
+  $('rightList').addEventListener('click', (e) => { if (e.target.closest('.del')) scheduleCompute(); });
+  $('mirrorLeft').addEventListener('change', scheduleCompute);
+
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-action]');
+    if (!btn) return;
+    const action = btn.dataset.action;
+    const side = btn.dataset.side;
+    if (action === 'add') addVec(side);
+    if (action === 'import') $(side === 'left' ? 'fileLeft' : 'fileRight').click();
+  });
+
+  $('fileLeft').addEventListener('change', (e) => { if (e.target.files[0]) importExcel(e.target.files[0], 'left'); e.target.value = ''; });
+  $('fileRight').addEventListener('change', (e) => { if (e.target.files[0]) importExcel(e.target.files[0], 'right'); e.target.value = ''; });
+
+  // 拖放导入
+  ['leftPanel', 'rightPanel'].forEach(id => {
+    const p = $(id);
+    const side = p.dataset.side;
+    p.addEventListener('dragover', (e) => { e.preventDefault(); p.classList.add('dragover'); });
+    p.addEventListener('dragleave', () => p.classList.remove('dragover'));
+    p.addEventListener('drop', (e) => {
+      e.preventDefault();
+      p.classList.remove('dragover');
+      const f = [...e.dataTransfer.files].find(f => /\.(xlsx|xls|csv)$/i.test(f.name));
+      if (f) importExcel(f, side);
+    });
+  });
+
+  $('mirrorLeft').addEventListener('change', () => {
+    const disabled = $('mirrorLeft').checked;
+    $('rightPanel').querySelectorAll('input,button').forEach(el => {
+      if (el.id === 'mirrorLeft') return;
+      el.disabled = disabled;
+      el.style.opacity = disabled ? 0.5 : '';
+    });
+    if (disabled) $('rightList').innerHTML = `<div class="empty-hint">${t('mirrorHint')}</div>`;
+    else renderList('right');
+  });
+
+  $('loadSample').addEventListener('click', loadSample);
+  $('downloadTpl').addEventListener('click', downloadTemplate);
+  $('clearAll').addEventListener('click', () => {
+    state.left = []; state.right = [];
+    state.lastResults = null;
+    lastLegend = null;
+    renderList('left'); renderList('right'); updateCounts();
+    $('result').innerHTML = `<div class="result-empty">${t('emptyHint')}</div>`;
+    $('legend').style.display = 'none';
+  });
+
+  // 下载 Excel 模板：第一列标签(可选)，其余列为向量各维度
+  function downloadTemplate() {
+    if (typeof XLSX === 'undefined') {
+      setStatus(t('tplMissing'), 'error');
+      return;
+    }
+    // 模板内容：表头 + 3 行示例（label + vector 字符串）
+    const aoa = [
+      ['label', 'vector'],
+      ['apple',  '0.12, 0.45, 0.78, 0.23'],
+      ['banana', '0.55, 0.21, 0.89, 0.10'],
+      ['cherry', '0.33, 0.67, 0.15, 0.92'],
+    ];
+    const ws = XLSX.utils.aoa_to_sheet(aoa);
+    ws['!cols'] = [{ wch: 12 }, { wch: 28 }];
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'vectors');
+    XLSX.writeFile(wb, 'vector_template.xlsx');
+    setStatus(t('tplOk'), 'ok');
+  }
+
+  function loadSample() {
+    // 归一化函数：L2 范数化为 1
+    const norm = (v) => {
+      const n = Math.sqrt(v.reduce((s, x) => s + x * x, 0));
+      return n === 0 ? v : v.map(x => x / n);
+    };
+    const raw = (arr) => arr.map(o => ({ label: o.label, vec: norm(o.vec) }));
+    state.left = raw([
+      { label: 'apple',  vec: [0.12, 0.45, 0.78, 0.23] },
+      { label: 'banana', vec: [0.55, 0.21, 0.89, 0.10] },
+      { label: 'cherry', vec: [0.33, 0.67, 0.15, 0.92] },
+      { label: 'date',   vec: [0.88, 0.05, 0.41, 0.67] },
+    ]);
+    state.right = raw([
+      { label: 'red',    vec: [0.30, 0.70, 0.20, 0.90] },
+      { label: 'yellow', vec: [0.60, 0.25, 0.85, 0.12] },
+      { label: 'sweet',  vec: [0.15, 0.50, 0.75, 0.30] },
+    ]);
+    $('mirrorLeft').checked = false;
+    $('rightPanel').querySelectorAll('input,button').forEach(el => { el.disabled = false; el.style.opacity = ''; });
+    renderList('left'); renderList('right'); updateCounts();
+    compute();
+  }
+
+  // 语言切换
+  $('langToggle').addEventListener('click', () => {
+    applyLang(curLang === 'zh' ? 'en' : 'zh');
+  });
+
+  // 初始化
+  state.left = [{ label: 'v1', vec: [] }, { label: 'v2', vec: [] }];
+  state.right = [{ label: 'q1', vec: [] }];
+  // 读取语言偏好
+  let initLang = 'zh';
+  try { initLang = localStorage.getItem('vss-lang') || 'zh'; } catch (e) {}
+  applyLang(initLang);
+  renderList('left'); renderList('right'); updateCounts();
+  compute(true); // 初始空态，静默
+})();
+</script>
+</body>
+</html>
