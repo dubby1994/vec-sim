@@ -1,0 +1,18 @@
+{
+    "name": "向量相似度矩阵计算器",
+    "short_name": "向量相似度计算器",
+    "description": "在线向量相似度计算器，批量计算 N×M 向量相似度矩阵。支持 Cosine、Inner Product、L2、L2² 四种算法，Excel 导入，热力图可视化。",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#4263eb",
+    "theme_color": "#4263eb",
+    "lang": "zh-CN",
+    "icons": [
+        {
+            "src": "/favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        }
+    ]
+}
